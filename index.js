@@ -11,6 +11,8 @@ const nsServer=express()
 nsServer.use(cors())
 //2. use json parser - application specific middleware
 nsServer.use(express.json())
+
+nsServer.use('/uploads',express.static('./uploads'))
 //3. use router
 nsServer.use(router)
 

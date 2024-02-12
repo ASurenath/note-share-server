@@ -43,7 +43,13 @@ exports.getAllNotes = async (req, res) => {
                     "authorDetails.email": 0,
                     "authorDetails.favourites": 0
                 }
-            }])
+            },
+            {
+                $sort: {
+                    "creationTime": -1
+                }
+            }
+        ])
         res.status(200).json(allNotes)
     }
     catch (err) {
@@ -57,7 +63,7 @@ exports.getMyNotes = async (req, res) => {
     console.log("inside get my notes api");
     const author = new ObjectId(req.payload)
     try {
-        const myNotes = await notes.find({ author })
+        const myNotes = await notes.find({ author }).sort({ creationTime: 'desc' })
         res.status(200).json(myNotes)
     }
     catch (err) {
@@ -69,10 +75,10 @@ exports.getMyNotes = async (req, res) => {
 //// edit note
 exports.editNote = async (req, res) => {
     console.log("inside edit api");
-    const { _id, content } = req.body
+    const { _id,title, content } = req.body
     const author = new ObjectId(req.payload)
     try {
-        const note = await notes.findOneAndUpdate({ _id, author }, { content })
+        const note = await notes.findOneAndUpdate({ _id, author }, { title, content })
         res.status(200).json(note)
     }
     catch (err) {
