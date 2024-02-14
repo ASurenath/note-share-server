@@ -24,9 +24,24 @@ exports.addNote = async (req, res) => {
 
 //// get All notes
 exports.getAllNotes = async (req, res) => {
+    const searchKey = req.query.search
     console.log("inside get All notes api");
     try {
         const allNotes = await notes.aggregate([
+            {
+                $match: {
+                    $or:[{title: {
+                        $regex: searchKey,
+                        $options: 'i'
+                    }},
+                    {content: {
+                        $regex: searchKey,
+                        $options: 'i'
+                    }}]
+                }
+
+            }
+            ,
             {
                 $lookup:
                 {
@@ -75,7 +90,7 @@ exports.getMyNotes = async (req, res) => {
 //// edit note
 exports.editNote = async (req, res) => {
     console.log("inside edit api");
-    const { _id,title, content } = req.body
+    const { _id, title, content } = req.body
     const author = new ObjectId(req.payload)
     try {
         const note = await notes.findOneAndUpdate({ _id, author }, { title, content })
